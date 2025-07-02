@@ -1,0 +1,380 @@
+<?php
+// Start session
+session_start();
+
+// Handle email subscription
+$message = '';
+$messageType = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
+    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+    
+    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        // Here you would typically save to database or send to mailing list
+        // For now, we'll just show a success message
+        $message = 'Thank you! We\'ll notify you when we launch.';
+        $messageType = 'success';
+    } else {
+        $message = 'Please enter a valid email address.';
+        $messageType = 'error';
+    }
+}
+
+// Calculate launch date (30 days from now)
+$launchDate = date('Y-m-d H:i:s', strtotime('+30 days'));
+?>
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon - Gemini Empire</title>
+    <meta name="description" content="Gemini Empire is launching soon! Be the first to experience our revolutionary financial services platform.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'gemini': {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    },
+                    animation: {
+                        'gradient': 'gradient 15s ease infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s infinite',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'fade-in': 'fadeIn 1s ease-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        gradient: {
+                            '0%, 100%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'left center'
+                            },
+                            '50%': {
+                                'background-size': '200% 200%',
+                                'background-position': 'right center'
+                            },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(34, 197, 94, 0.5)' },
+                            '100%': { boxShadow: '0 0 40px rgba(34, 197, 94, 0.8)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        .gradient-bg {
+            background: linear-gradient(-45deg, #22c55e, #16a34a, #15803d, #166534);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .floating-shape {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-shape:nth-child(2) { animation-delay: -2s; }
+        .floating-shape:nth-child(3) { animation-delay: -4s; }
+        .floating-shape:nth-child(4) { animation-delay: -1s; }
+        .floating-shape:nth-child(5) { animation-delay: -3s; }
+        
+        .countdown-box {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
+        
+        .btn-glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        .parallax-mouse {
+            transition: transform 0.1s ease-out;
+        }
+    </style>
+</head>
+
+<body class="gradient-bg min-h-screen text-white overflow-x-hidden">
+    <!-- Floating Background Shapes -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="floating-shape absolute top-20 left-10 w-32 h-32 bg-white/10 rounded-full"></div>
+        <div class="floating-shape absolute top-40 right-20 w-24 h-24 bg-yellow-400/20 rounded-full"></div>
+        <div class="floating-shape absolute bottom-40 left-20 w-40 h-40 bg-white/5 rounded-full"></div>
+        <div class="floating-shape absolute bottom-20 right-10 w-28 h-28 bg-green-400/20 rounded-full"></div>
+        <div class="floating-shape absolute top-1/2 left-1/2 w-20 h-20 bg-white/10 rounded-full transform -translate-x-1/2 -translate-y-1/2"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="relative z-10 min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="p-4 sm:p-6">
+            <div class="container mx-auto">
+                <div class="flex items-center justify-center">
+                    <div class="flex items-center space-x-3">
+                        <img src="assets/images/logo.png" alt="Gemini Empire Logo" class="w-10 h-10 sm:w-12 sm:h-12">
+                        <div class="text-center sm:text-left">
+                            <h1 class="text-xl sm:text-2xl font-bold text-white">Gemini Empire</h1>
+                            <p class="text-xs sm:text-sm text-white/80">Swift & Reliable</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+            <div class="container mx-auto text-center max-w-4xl">
+                <!-- Coming Soon Badge -->
+                <div class="inline-flex items-center bg-white/20 backdrop-blur-sm border border-white/30 px-4 py-2 rounded-full text-sm font-semibold mb-6 sm:mb-8 animate-fade-in">
+                    <i class="fas fa-rocket mr-2 text-yellow-400"></i>
+                    Something Amazing is Coming
+                </div>
+
+                <!-- Main Heading -->
+                <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 leading-tight animate-slide-up">
+                    We're Launching
+                    <span class="block text-yellow-400">Very Soon!</span>
+                </h1>
+
+                <!-- Description -->
+                <p class="text-lg sm:text-xl md:text-2xl mb-8 sm:mb-12 max-w-3xl mx-auto text-white/90 leading-relaxed animate-fade-in" style="animation-delay: 0.2s;">
+                    Get ready for the most revolutionary financial platform. 
+                    <span class="font-semibold text-yellow-400">Cryptocurrency trading</span>, 
+                    <span class="font-semibold text-yellow-400">international transfers</span>, and 
+                    <span class="font-semibold text-yellow-400">gift card services</span> 
+                    all in one secure platform.
+                </p>
+
+                <!-- Countdown Timer -->
+                <div class="mb-8 sm:mb-12 animate-fade-in" style="animation-delay: 0.4s;">
+                    <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Launch Countdown</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 max-w-md sm:max-w-2xl mx-auto">
+                        <div class="countdown-box rounded-xl p-3 sm:p-4">
+                            <div id="days" class="text-2xl sm:text-3xl md:text-4xl font-bold">30</div>
+                            <div class="text-xs sm:text-sm text-white/80">Days</div>
+                        </div>
+                        <div class="countdown-box rounded-xl p-3 sm:p-4">
+                            <div id="hours" class="text-2xl sm:text-3xl md:text-4xl font-bold">00</div>
+                            <div class="text-xs sm:text-sm text-white/80">Hours</div>
+                        </div>
+                        <div class="countdown-box rounded-xl p-3 sm:p-4">
+                            <div id="minutes" class="text-2xl sm:text-3xl md:text-4xl font-bold">00</div>
+                            <div class="text-xs sm:text-sm text-white/80">Minutes</div>
+                        </div>
+                        <div class="countdown-box rounded-xl p-3 sm:p-4">
+                            <div id="seconds" class="text-2xl sm:text-3xl md:text-4xl font-bold">00</div>
+                            <div class="text-xs sm:text-sm text-white/80">Seconds</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Subscription -->
+                <div class="mb-8 sm:mb-12 animate-fade-in" style="animation-delay: 0.6s;">
+                    <h2 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Be the First to Know</h2>
+                    <p class="text-white/90 mb-4 sm:mb-6 text-sm sm:text-base">Get notified when we launch and receive exclusive early access!</p>
+                    
+                    <?php if ($message): ?>
+                        <div class="mb-4 p-3 sm:p-4 rounded-lg max-w-md mx-auto <?php echo $messageType === 'success' ? 'bg-green-500/20 border border-green-400/30 text-green-100' : 'bg-red-500/20 border border-red-400/30 text-red-100'; ?>">
+                            <?php echo htmlspecialchars($message); ?>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <form method="POST" class="flex flex-col sm:flex-row gap-3 sm:gap-4 max-w-md mx-auto">
+                        <input 
+                            type="email" 
+                            name="email" 
+                            placeholder="Enter your email address" 
+                            required
+                            class="flex-1 px-4 py-3 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white placeholder-white/70 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:border-transparent text-sm sm:text-base"
+                        >
+                        <button 
+                            type="submit" 
+                            class="btn-glow bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 text-sm sm:text-base whitespace-nowrap"
+                        >
+                            <i class="fas fa-bell mr-2"></i>
+                            Notify Me
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Feature Preview -->
+                <div class="animate-fade-in" style="animation-delay: 0.8s;">
+                    <h2 class="text-xl sm:text-2xl font-bold mb-6 sm:mb-8">What's Coming</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-4xl mx-auto">
+                        <div class="feature-card rounded-xl p-4 sm:p-6">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                                <i class="fas fa-exchange-alt text-white text-lg sm:text-xl"></i>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3">Money Transfer</h3>
+                            <p class="text-white/80 text-sm sm:text-base">Send money globally with competitive rates and instant processing.</p>
+                        </div>
+                        
+                        <div class="feature-card rounded-xl p-4 sm:p-6">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                                <i class="fab fa-bitcoin text-white text-lg sm:text-xl"></i>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3">Crypto Trading</h3>
+                            <p class="text-white/80 text-sm sm:text-base">Trade cryptocurrencies with the best rates and secure transactions.</p>
+                        </div>
+                        
+                        <div class="feature-card rounded-xl p-4 sm:p-6 sm:col-span-2 lg:col-span-1">
+                            <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-pink-400 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                                <i class="fas fa-gift text-white text-lg sm:text-xl"></i>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-bold mb-2 sm:mb-3">Gift Cards</h3>
+                            <p class="text-white/80 text-sm sm:text-base">Convert gift cards to cash or crypto at market-leading rates.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="p-4 sm:p-6">
+            <div class="container mx-auto">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <!-- Social Links -->
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 transform hover:scale-110">
+                            <i class="fab fa-twitter text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 transform hover:scale-110">
+                            <i class="fab fa-facebook text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 transform hover:scale-110">
+                            <i class="fab fa-instagram text-white"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full flex items-center justify-center hover:bg-white/30 transition-all duration-300 transform hover:scale-110">
+                            <i class="fab fa-telegram text-white"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Copyright -->
+                    <div class="text-center sm:text-right">
+                        <p class="text-white/80 text-sm">
+                            © <?php echo date('Y'); ?> Gemini Empire. All rights reserved.
+                        </p>
+                        <p class="text-white/60 text-xs mt-1">
+                            Swift & Reliable Financial Services
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Countdown Timer
+        const launchDate = new Date('<?php echo $launchDate; ?>').getTime();
+        
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = launchDate - now;
+            
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+            
+            if (distance < 0) {
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+            }
+        }
+        
+        // Update countdown every second
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+        
+        // Parallax mouse effect
+        document.addEventListener('mousemove', (e) => {
+            const shapes = document.querySelectorAll('.floating-shape');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            shapes.forEach((shape, index) => {
+                const speed = (index + 1) * 0.5;
+                const xPos = (x - 0.5) * speed;
+                const yPos = (y - 0.5) * speed;
+                
+                shape.style.transform = `translate(${xPos}px, ${yPos}px)`;
+            });
+        });
+        
+        // Add loading animation
+        window.addEventListener('load', function() {
+            document.body.classList.add('loaded');
+        });
+        
+        // Form submission animation
+        const form = document.querySelector('form');
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        form.addEventListener('submit', function() {
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Subscribing...';
+            submitBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

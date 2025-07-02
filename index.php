@@ -1,0 +1,797 @@
+<?php
+session_start();
+require_once 'includes/config.php';
+require_once 'includes/db.php';
+
+// Check if user is already logged in
+if (isset($_SESSION['user_id'])) {
+    header('Location: dashboard.php');
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Empire - Swift & Reliable Financial Services</title>
+    <meta name="description" content="Experience the most reliable cryptocurrency exchange, PayPal services, international transfers, and gift card trading with Gemini Empire.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'gemini': {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'slide-right': 'slideRight 0.8s ease-out',
+                        'fade-in': 'fadeIn 1s ease-out',
+                        'bounce-slow': 'bounce 3s infinite',
+                        'pulse-slow': 'pulse 4s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(100px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideRight: {
+                            '0%': { transform: 'translateX(-100px)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .hero-pattern {
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(22, 163, 74, 0.1) 0%, transparent 50%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(251, 191, 36, 0.3);
+        }
+        
+        .floating-icons {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-icons:nth-child(2) { animation-delay: -2s; }
+        .floating-icons:nth-child(3) { animation-delay: -4s; }
+        
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+        
+        /* Mobile-first responsive adjustments */
+        @media (max-width: 640px) {
+            .hero-text {
+                font-size: 2.5rem;
+                line-height: 1.1;
+            }
+            
+            .hero-description {
+                font-size: 1.125rem;
+                line-height: 1.5;
+            }
+            
+            .service-card {
+                padding: 1rem;
+            }
+            
+            .floating-icons {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 overflow-x-hidden">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-200">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2 sm:space-x-3">
+                    <img src="assets/images/logo.png" alt="Gemini Empire Logo" class="w-8 h-8 sm:w-10 sm:h-10">
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-bold gradient-text">Gemini Empire</h1>
+                        <p class="text-xs text-gray-500 hidden sm:block">Swift & Reliable</p>
+                    </div>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
+                    <a href="#home" class="text-gray-700 hover:text-gemini-600 transition-colors font-medium">Home</a>
+                    <a href="#services" class="text-gray-700 hover:text-gemini-600 transition-colors font-medium">Services</a>
+                    <a href="#about" class="text-gray-700 hover:text-gemini-600 transition-colors font-medium">About</a>
+                    <a href="#contact" class="text-gray-700 hover:text-gemini-600 transition-colors font-medium">Contact</a>
+                </div>
+                
+                <!-- Auth Buttons -->
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <a href="coming-soon.php" class="text-gray-700 hover:text-gemini-600 transition-colors font-medium text-sm sm:text-base">Login</a>
+                    <a href="coming-soon.php" class="btn-primary text-white px-3 py-2 sm:px-6 sm:py-2 rounded-full font-semibold text-sm sm:text-base">Get Started</a>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-gray-700 hover:text-gemini-600 ml-2">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden bg-white border-t border-gray-200 hidden">
+            <div class="px-4 py-4 space-y-4">
+                <a href="#home" class="block text-gray-700 hover:text-gemini-600 transition-colors font-medium">Home</a>
+                <a href="#services" class="block text-gray-700 hover:text-gemini-600 transition-colors font-medium">Services</a>
+                <a href="#about" class="block text-gray-700 hover:text-gemini-600 transition-colors font-medium">About</a>
+                <a href="#contact" class="block text-gray-700 hover:text-gemini-600 transition-colors font-medium">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center hero-pattern overflow-hidden pt-16">
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 hidden sm:block">
+            <!-- Floating Icons -->
+            <div class="floating-icons absolute top-20 left-10 text-gemini-400 opacity-20">
+                <i class="fab fa-bitcoin text-4xl lg:text-6xl"></i>
+            </div>
+            <div class="floating-icons absolute top-40 right-20 text-yellow-400 opacity-20">
+                <i class="fas fa-coins text-3xl lg:text-5xl"></i>
+            </div>
+            <div class="floating-icons absolute bottom-40 left-20 text-blue-400 opacity-20">
+                <i class="fab fa-paypal text-3xl lg:text-5xl"></i>
+            </div>
+            <div class="floating-icons absolute bottom-20 right-10 text-purple-400 opacity-20">
+                <i class="fas fa-gift text-2xl lg:text-4xl"></i>
+            </div>
+            
+            <!-- Gradient Orbs -->
+            <div class="absolute top-1/4 left-1/4 w-32 h-32 lg:w-64 lg:h-64 bg-gradient-to-r from-gemini-400 to-gemini-600 rounded-full opacity-10 animate-pulse-slow"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-24 h-24 lg:w-48 lg:h-48 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full opacity-10 animate-pulse-slow" style="animation-delay: 2s;"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+                <!-- Left Content -->
+                <div class="text-center lg:text-left animate-slide-up order-2 lg:order-1">
+                    <div class="inline-flex items-center bg-gemini-100 text-gemini-800 px-3 py-1 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-semibold mb-4 sm:mb-6">
+                        <i class="fas fa-star text-yellow-500 mr-2"></i>
+                        #1 Trusted Platform
+                    </div>
+                    
+                    <h1 class="hero-text text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+                        Swift & 
+                        <span class="gradient-text">Reliable</span>
+                        <br class="hidden sm:block">Financial Services
+                    </h1>
+                    
+                    <p class="hero-description text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto lg:mx-0">
+                        Experience the future of digital finance with <span class="font-semibold text-gemini-600">sweet rates</span>, 
+                        lightning-fast transactions, and unmatched reliability when you trade with Gemini Empire.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-8 sm:mb-12">
+                        <a href="coming-soon.php" class="btn-primary text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-base sm:text-lg inline-flex items-center justify-center">
+                            <i class="fas fa-rocket mr-2"></i>
+                            Start Trading Now
+                        </a>
+                        <a href="#services" class="btn-secondary text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-base sm:text-lg inline-flex items-center justify-center">
+                            <i class="fas fa-play mr-2"></i>
+                            Explore Services
+                        </a>
+                    </div>
+                    
+                    <!-- Stats -->
+                    <div class="grid grid-cols-3 gap-4 sm:gap-8 pt-6 sm:pt-8 border-t border-gray-200">
+                        <div class="text-center">
+                            <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">50K+</div>
+                            <div class="text-xs sm:text-sm text-gray-600">Happy Users</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">$10M+</div>
+                            <div class="text-xs sm:text-sm text-gray-600">Traded Volume</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">24/7</div>
+                            <div class="text-xs sm:text-sm text-gray-600">Support</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Content - Hero Image -->
+                <div class="relative animate-slide-right order-1 lg:order-2 mb-8 lg:mb-0">
+                    <div class="relative max-w-sm sm:max-w-md mx-auto">
+                        <!-- Main Device Mockup -->
+                        <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-6 lg:p-8">
+                            <div class="bg-gradient-to-br from-gemini-500 to-gemini-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 text-white">
+                                <div class="flex items-center justify-between mb-3 sm:mb-4">
+                                    <h3 class="font-bold text-base sm:text-lg">Dashboard</h3>
+                                    <div class="w-6 h-6 sm:w-8 sm:h-8 bg-white/20 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-user text-xs sm:text-sm"></i>
+                                    </div>
+                                </div>
+                                <div class="space-y-2 sm:space-y-3">
+                                    <div class="bg-white/10 rounded-lg p-2 sm:p-3">
+                                        <div class="text-xs sm:text-sm opacity-80">Total Balance</div>
+                                        <div class="text-lg sm:text-xl lg:text-2xl font-bold">$12,450.00</div>
+                                    </div>
+                                    <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                                        <div class="bg-white/10 rounded-lg p-2 sm:p-3">
+                                            <div class="text-xs opacity-80">Bitcoin</div>
+                                            <div class="text-sm sm:text-base font-bold">0.25 BTC</div>
+                                        </div>
+                                        <div class="bg-white/10 rounded-lg p-2 sm:p-3">
+                                            <div class="text-xs opacity-80">PayPal</div>
+                                            <div class="text-sm sm:text-base font-bold">$2,100</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 sm:mt-6 space-y-2 sm:space-y-3">
+                                <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center mr-2 sm:mr-3">
+                                            <i class="fas fa-arrow-up text-green-600 text-xs sm:text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold text-xs sm:text-sm">Received</div>
+                                            <div class="text-xs text-gray-500">Bitcoin Transfer</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-green-600 font-bold text-xs sm:text-sm">+$1,250</div>
+                                </div>
+                                <div class="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-full flex items-center justify-center mr-2 sm:mr-3">
+                                            <i class="fab fa-paypal text-blue-600 text-xs sm:text-sm"></i>
+                                        </div>
+                                        <div>
+                                            <div class="font-semibold text-xs sm:text-sm">PayPal</div>
+                                            <div class="text-xs text-gray-500">Payment Sent</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-gray-600 font-bold text-xs sm:text-sm">-$850</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Floating Elements -->
+                        <div class="absolute -top-3 -right-3 sm:-top-6 sm:-right-6 bg-yellow-400 text-yellow-900 px-2 py-1 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-lg animate-bounce-slow">
+                            Live Rates
+                        </div>
+                        <div class="absolute -bottom-3 -left-3 sm:-bottom-6 sm:-left-6 bg-blue-500 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full font-bold text-xs sm:text-sm shadow-lg animate-bounce-slow" style="animation-delay: 1s;">
+                            Secure
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator hidden sm:block">
+            <div class="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
+                <div class="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-bounce"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-12 sm:py-16 lg:py-20 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 sm:mb-16">
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                    Our <span class="gradient-text">Services</span>
+                </h2>
+                <p class="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+                    Comprehensive financial solutions designed to meet all your digital trading and transfer needs
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                <?php
+                $services = [
+                    [
+                        'icon' => 'fab fa-bitcoin',
+                        'title' => 'Cryptocurrency Exchange',
+                        'description' => 'Trade Bitcoin, Ethereum, and other cryptocurrencies at competitive rates with instant settlements.',
+                        'color' => 'from-orange-400 to-orange-600',
+                        'bg' => 'bg-orange-50',
+                        'link' => 'coming-soon.php'
+                    ],
+                    [
+                        'icon' => 'fab fa-paypal',
+                        'title' => 'PayPal Services',
+                        'description' => 'Send and receive PayPal payments globally with minimal fees and lightning-fast processing.',
+                        'color' => 'from-blue-400 to-blue-600',
+                        'bg' => 'bg-blue-50',
+                        'link' => 'coming-soon.php'
+                    ],
+                    [
+                        'icon' => 'fas fa-globe-americas',
+                        'title' => 'International Transfers',
+                        'description' => 'Send money to over 50 countries with competitive exchange rates and secure transfers.',
+                        'color' => 'from-purple-400 to-purple-600',
+                        'bg' => 'bg-purple-50',
+                        'link' => 'coming-soon.php'
+                    ],
+                    [
+                        'icon' => 'fas fa-gift',
+                        'title' => 'Gift Card Trading',
+                        'description' => 'Convert your gift cards to cash or cryptocurrency at the best market rates available.',
+                        'color' => 'from-pink-400 to-pink-600',
+                        'bg' => 'bg-pink-50',
+                        'link' => 'coming-soon.php'
+                    ]
+                ];
+                
+                foreach ($services as $index => $service):
+                ?>
+                <div class="service-card card-hover bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100" style="animation-delay: <?php echo $index * 0.1; ?>s;">
+                    <div class="<?php echo $service['bg']; ?> p-4 sm:p-6">
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r <?php echo $service['color']; ?> rounded-xl sm:rounded-2xl flex items-center justify-center mb-3 sm:mb-4 mx-auto">
+                            <i class="<?php echo $service['icon']; ?> text-lg sm:text-2xl text-white"></i>
+                        </div>
+                    </div>
+                    <div class="p-4 sm:p-6">
+                        <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3"><?php echo $service['title']; ?></h3>
+                        <p class="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4"><?php echo $service['description']; ?></p>
+                        <a href="<?php echo $service['link']; ?>" class="inline-flex items-center text-gemini-600 hover:text-gemini-700 font-semibold transition-colors text-sm sm:text-base">
+                            Get Started
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-12 sm:py-16 lg:py-20 bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 sm:gap-16 items-center">
+                <div class="order-2 lg:order-1">
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
+                        Why Choose <span class="gradient-text">Gemini Empire</span>?
+                    </h2>
+                    <p class="text-lg sm:text-xl text-gray-600 mb-6 sm:mb-8">
+                        We're committed to providing the most secure, efficient, and user-friendly financial services in the digital space.
+                    </p>
+                    
+                    <div class="space-y-4 sm:space-y-6">
+                        <?php
+                        $features = [
+                            [
+                                'icon' => 'fas fa-shield-alt',
+                                'title' => 'Bank-Level Security',
+                                'description' => 'Your funds and data are protected with military-grade encryption and multi-layer security protocols.'
+                            ],
+                            [
+                                'icon' => 'fas fa-bolt',
+                                'title' => 'Lightning Fast',
+                                'description' => 'Process transactions in seconds, not hours. Our optimized infrastructure ensures rapid execution.'
+                            ],
+                            [
+                                'icon' => 'fas fa-headset',
+                                'title' => '24/7 Support',
+                                'description' => 'Our dedicated support team is available round the clock to assist you with any queries or issues.'
+                            ]
+                        ];
+                        
+                        foreach ($features as $feature):
+                        ?>
+                        <div class="flex items-start space-x-3 sm:space-x-4">
+                            <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gemini-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                                <i class="<?php echo $feature['icon']; ?> text-gemini-600 text-base sm:text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-base sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2"><?php echo $feature['title']; ?></h3>
+                                <p class="text-sm sm:text-base text-gray-600"><?php echo $feature['description']; ?></p>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                
+                <div class="relative order-1 lg:order-2">
+                    <div class="bg-gradient-to-br from-gemini-500 to-gemini-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-white">
+                        <div class="grid grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                            <div class="bg-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center">
+                                <div class="text-2xl sm:text-3xl font-bold">99.9%</div>
+                                <div class="text-xs sm:text-sm opacity-80">Uptime</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center">
+                                <div class="text-2xl sm:text-3xl font-bold">50K+</div>
+                                <div class="text-xs sm:text-sm opacity-80">Users</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center">
+                                <div class="text-2xl sm:text-3xl font-bold">$10M+</div>
+                                <div class="text-xs sm:text-sm opacity-80">Volume</div>
+                            </div>
+                            <div class="bg-white/10 rounded-xl sm:rounded-2xl p-3 sm:p-4 text-center">
+                                <div class="text-2xl sm:text-3xl font-bold">4.9★</div>
+                                <div class="text-xs sm:text-sm opacity-80">Rating</div>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="text-xl sm:text-2xl font-bold mb-2">Trusted by Thousands</h3>
+                            <p class="text-sm sm:text-base opacity-90">Join our growing community of satisfied users</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-12 sm:py-16 lg:py-20 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12 sm:mb-16">
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+                    What Our <span class="gradient-text">Clients Say</span>
+                </h2>
+                <p class="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+                    Don't just take our word for it. Here's what our satisfied customers have to say about our services.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                <?php
+                $testimonials = [
+                    [
+                        'name' => 'Sarah Johnson',
+                        'role' => 'Crypto Trader',
+                        'avatar' => 'SJ',
+                        'rating' => 5,
+                        'content' => 'Gemini Empire has revolutionized my trading experience. The rates are unbeatable and the platform is incredibly user-friendly. Highly recommended!'
+                    ],
+                    [
+                        'name' => 'Michael Chen',
+                        'role' => 'Business Owner',
+                        'avatar' => 'MC',
+                        'rating' => 5,
+                        'content' => 'I use Gemini Empire for all my international transfers. Fast, reliable, and cost-effective. Their customer service is exceptional too.'
+                    ],
+                    [
+                        'name' => 'Jessica Williams',
+                        'role' => 'Freelancer',
+                        'avatar' => 'JW',
+                        'rating' => 5,
+                        'content' => 'Converting gift cards has never been easier. Great rates, quick processing, and transparent fees. This platform is a game-changer!'
+                    ]
+                ];
+                
+                foreach ($testimonials as $testimonial):
+                ?>
+                <div class="card-hover bg-white rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 border border-gray-100">
+                    <div class="flex items-center mb-4 sm:mb-6">
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-gemini-400 to-gemini-600 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-lg mr-3 sm:mr-4">
+                            <?php echo $testimonial['avatar']; ?>
+                        </div>
+                        <div>
+                            <h4 class="text-base sm:text-lg font-bold text-gray-900"><?php echo $testimonial['name']; ?></h4>
+                            <p class="text-gemini-600 font-medium text-sm sm:text-base"><?php echo $testimonial['role']; ?></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex mb-3 sm:mb-4">
+                        <?php for ($i = 0; $i < $testimonial['rating']; $i++): ?>
+                            <i class="fas fa-star text-yellow-400 text-sm"></i>
+                        <?php endfor; ?>
+                    </div>
+                    
+                    <p class="text-sm sm:text-base text-gray-600 italic leading-relaxed">"<?php echo $testimonial['content']; ?>"</p>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-gemini-600 to-gemini-800 text-white relative overflow-hidden">
+        <div class="absolute inset-0 hidden sm:block">
+            <div class="absolute top-10 left-10 w-24 h-24 sm:w-32 sm:h-32 bg-white/10 rounded-full animate-pulse-slow"></div>
+            <div class="absolute bottom-10 right-10 w-16 h-16 sm:w-24 sm:h-24 bg-yellow-400/20 rounded-full animate-pulse-slow" style="animation-delay: 1s;"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-4xl mx-auto">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6">
+                    Ready to Start Your
+                    <span class="text-yellow-400">Financial Journey</span>?
+                </h2>
+                <p class="text-base sm:text-lg lg:text-xl mb-6 sm:mb-8 opacity-90 max-w-2xl mx-auto">
+                    Join thousands of satisfied users who trust Gemini Empire for their digital financial needs. 
+                    Start trading today and experience the difference.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mb-8 sm:mb-12">
+                    <a href="coming-soon.php" class="bg-white text-gemini-600 px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:bg-gray-100 transition-all transform hover:scale-105 inline-flex items-center justify-center">
+                        <i class="fas fa-user-plus mr-2"></i>
+                        Create Free Account
+                    </a>
+                    <a href="coming-soon.php" class="border-2 border-white text-white px-6 py-3 sm:px-8 sm:py-4 rounded-full font-bold text-base sm:text-lg hover:bg-white hover:text-gemini-600 transition-all transform hover:scale-105 inline-flex items-center justify-center">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        Login Now
+                    </a>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 text-center">
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">0%</div>
+                        <div class="text-xs sm:text-sm opacity-80">Setup Fees</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">24/7</div>
+                        <div class="text-xs sm:text-sm opacity-80">Support</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">Instant</div>
+                        <div class="text-xs sm:text-sm opacity-80">Transactions</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">Secure</div>
+                        <div class="text-xs sm:text-sm opacity-80">Platform</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12 sm:py-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 sm:mb-12">
+                <!-- Company Info -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-4 sm:mb-6">
+                        <img src="assets/images/logo.png" alt="Gemini Empire Logo" class="w-10 h-10 sm:w-12 sm:h-12">
+                        <div>
+                            <h3 class="text-xl sm:text-2xl font-bold">Gemini Empire</h3>
+                            <p class="text-gray-400 text-sm">Swift & Reliable</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-400 mb-4 sm:mb-6 max-w-md text-sm sm:text-base">
+                        Your trusted partner for cryptocurrency trading, international transfers, and digital financial services. 
+                        Experience the future of finance with Gemini Empire.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gemini-600 transition-colors">
+                            <i class="fab fa-twitter text-sm"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gemini-600 transition-colors">
+                            <i class="fab fa-facebook text-sm"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gemini-600 transition-colors">
+                            <i class="fab fa-instagram text-sm"></i>
+                        </a>
+                        <a href="#" class="w-8 h-8 sm:w-10 sm:h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-gemini-600 transition-colors">
+                            <i class="fab fa-telegram text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Home</a></li>
+                        <li><a href="#services" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Services</a></li>
+                        <li><a href="#about" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">About Us</a></li>
+                        <li><a href="#contact" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Contact</a></li>
+                        <li><a href="coming-soon.php" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Exchange Rates</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Support -->
+                <div>
+                    <h4 class="text-base sm:text-lg font-bold mb-3 sm:mb-4">Support</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Help Center</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">Security</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm sm:text-base">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-6 sm:pt-8 text-center">
+                <p class="text-gray-400 text-sm sm:text-base">
+                    © <?php echo date('Y'); ?> Gemini Empire. All rights reserved. | 
+                    <span class="text-gemini-400">Swift & Reliable Financial Services</span>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    
+                    // Close mobile menu if open
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Add loading animation
+        window.addEventListener('load', function() {
+            document.body.classList.add('loaded');
+        });
+
+        // Parallax effect for hero section (disabled on mobile for performance)
+        if (window.innerWidth > 768) {
+            window.addEventListener('scroll', function() {
+                const scrolled = window.pageYOffset;
+                const parallax = document.querySelector('.hero-pattern');
+                const speed = scrolled * 0.5;
+                
+                if (parallax) {
+                    parallax.style.transform = `translateY(${speed}px)`;
+                }
+            });
+        }
+
+        // Touch-friendly interactions for mobile
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+        }
+    </script>
+    <script>
+                var url = 'https://wati-integration-prod-service.clare.ai/v2/watiWidget.js?59415';
+                var s = document.createElement('script');
+                s.type = 'text/javascript';
+                s.async = true;
+                s.src = url;
+                var options = {
+                "enabled":true,
+                "chatButtonSetting":{
+                    "backgroundColor":"#00b40d",
+                    "ctaText":"",
+                    "borderRadius":"25",
+                    "marginLeft": "0",
+                    "marginRight": "20",
+                    "marginBottom": "20",
+                    "ctaIconWATI":false,
+                    "position":"right"
+                },
+                "brandSetting":{
+                    "brandName":"Gemini Empire",
+                    "brandSubTitle":"undefined",
+                    "brandImg":"https://www.wati.io/wp-content/uploads/2023/04/Wati-logo.svg",
+                    "welcomeText":"Hi there!\nHow can I help you?",
+                    "messageText":"",
+                    "backgroundColor":"#00b40d",
+                    "ctaText":"",
+                    "borderRadius":"25",
+                    "autoShow":false,
+                    "phoneNumber":"2349118257403"
+                }
+                };
+                s.onload = function() {
+                    CreateWhatsappChatWidget(options);
+                };
+                var x = document.getElementsByTagName('script')[0];
+                x.parentNode.insertBefore(s, x);
+            </script>
+</body>
+</html>
