@@ -1,15 +1,3 @@
-<?php
-session_start();
-require_once 'includes/config.php';
-require_once 'includes/db.php';
-
-// Check if user is already logged in
-if (isset($_SESSION['user_id'])) {
-    header('Location: dashboard.php');
-    exit();
-}
-?>
-
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -169,7 +157,7 @@ if (isset($_SESSION['user_id'])) {
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <div class="flex items-center space-x-2 sm:space-x-3">
-                    <img src="assets/images/logo.png" alt="Gemini Empire Logo" class="w-8 h-8 sm:w-10 sm:h-10">
+                    <img src="logo.png" alt="Gemini Empire Logo" class="w-8 h-8 sm:w-10 sm:h-10">
                     <div>
                         <h1 class="text-lg sm:text-xl font-bold gradient-text">Gemini Empire</h1>
                         <p class="text-xs text-gray-500 hidden sm:block">Swift & Reliable</p>
@@ -626,7 +614,7 @@ if (isset($_SESSION['user_id'])) {
                 <!-- Company Info -->
                 <div class="md:col-span-2">
                     <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-                        <img src="assets/images/logo.png" alt="Gemini Empire Logo" class="w-10 h-10 sm:w-12 sm:h-12">
+                        <img src="logo.png" alt="Gemini Empire Logo" class="w-10 h-10 sm:w-12 sm:h-12">
                         <div>
                             <h3 class="text-xl sm:text-2xl font-bold">Gemini Empire</h3>
                             <p class="text-gray-400 text-sm">Swift & Reliable</p>
