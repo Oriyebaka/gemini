@@ -1,28 +1,4 @@
-<?php
-// Start session
-session_start();
 
-// Handle email subscription
-$message = '';
-$messageType = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['email'])) {
-    $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    
-    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        // Here you would typically save to database or send to mailing list
-        // For now, we'll just show a success message
-        $message = 'Thank you! We\'ll notify you when we launch.';
-        $messageType = 'success';
-    } else {
-        $message = 'Please enter a valid email address.';
-        $messageType = 'error';
-    }
-}
-
-// Calculate launch date (30 days from now)
-$launchDate = date('Y-m-d H:i:s', strtotime('+30 days'));
-?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 <head>
@@ -164,7 +140,7 @@ $launchDate = date('Y-m-d H:i:s', strtotime('+30 days'));
             <div class="container mx-auto">
                 <div class="flex items-center justify-center">
                     <div class="flex items-center space-x-3">
-                        <img src="assets/images/logo.png" alt="Gemini Empire Logo" class="w-10 h-10 sm:w-12 sm:h-12">
+                        <img src="logo.png" alt="Gemini Empire Logo" class="w-10 h-10 sm:w-12 sm:h-12">
                         <div class="text-center sm:text-left">
                             <h1 class="text-xl sm:text-2xl font-bold text-white">Gemini Empire</h1>
                             <p class="text-xs sm:text-sm text-white/80">Swift & Reliable</p>
